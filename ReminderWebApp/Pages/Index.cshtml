@@ -4,7 +4,14 @@
     ViewData["Title"] = "Home page";
 }
 
+@section Sidebar{
+    <div class="col-md-3">
+        @await Component.InvokeAsync("ToDoThings")
+    </div>
+}
 <div class="text-center">
     <h1 class="display-4">Welcome @Model.Name</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+

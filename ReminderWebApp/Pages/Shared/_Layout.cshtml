@@ -31,6 +31,9 @@
             </div>
         </nav>
     </header>
+    <div class="side-bar">
+        @RenderSection("Sidebar", required: false)
+    </div>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

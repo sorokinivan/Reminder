@@ -12,5 +12,6 @@ namespace ReminderWebApp.Data
         }
 
         public DbSet<Student> Students { get; set; }
+        public DbSet<ToDoThing> ToDoThings { get; set; }
     }
 }
