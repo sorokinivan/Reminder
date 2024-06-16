@@ -1,5 +1,4 @@
 ﻿.wrapper {
-    max-width: 1100px;
     margin: 15px auto;
 }
 
@@ -7,12 +6,18 @@
 .container-calendar {
     background: #ffffff;
     padding: 15px;
-    max-width: 900px;
+    max-width: fit-content;
     margin: 0 auto;
     overflow: auto;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: space-between;
+}
+
+.calendar-header-container{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:20px;
 }
 
 /* Event section styling */
@@ -124,7 +129,7 @@
 }
 
 /* Buttons in the calendar */
-.button-container-calendar button {
+.button-calendar {
     cursor: pointer;
     background: green;
     color: #fff;
@@ -159,18 +164,30 @@
     }
 
 /* Day-specific styling */
-.date-picker:nth-child(1) {
+.date-picker:nth-child(7) {
     color: red;
     /* Sunday */
 }
 
+/* Day-specific styling */
 .date-picker:nth-child(6) {
+    color: red;
+    /* Sunday */
+}
+
+.date-picker:nth-child(5) {
     color: green;
     /* Friday */
 }
 
 /* Hover effect for date cells */
 .date-picker:hover {
+    background-color: green;
+    color: white;
+    cursor: pointer;
+}
+
+.selected-day {
     background-color: green;
     color: white;
     cursor: pointer;
@@ -212,4 +229,98 @@
         border: 1px solid #bfc5c5;
         border-radius: 3px;
         padding: 5px 1em;
+    }
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+.todothings-button {
+    margin-left:5px;
+    margin-right:5px;
+    appearance: none;
+    backface-visibility: hidden;
+    background-color: #27ae60;
+    border-radius: 8px;
+    border-style: none;
+    box-shadow: rgba(39, 174, 96, .15) 0 4px 9px;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Inter,-apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: normal;
+    line-height: 1.5;
+    outline: none;
+    overflow: hidden;
+    padding: 13px 20px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    transform: translate3d(0, 0, 0);
+    transition: all .3s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+    .todothings-button:hover {
+        background-color: #1e8449;
+        opacity: 1;
+        transform: translateY(0);
+        transition-duration: .35s;
+    }
+
+    .todothings-button:active {
+        transform: translateY(2px);
+        transition-duration: .35s;
+    }
+
+    .todothings-button:hover {
+        box-shadow: rgba(39, 174, 96, .2) 0 6px 12px;
+    }
+
+    .todothings-container-visible{
+        display:flex;
+    }
+
+    .todothings-container-hidden{
+        display:none;
     }
