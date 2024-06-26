@@ -14,13 +14,20 @@ let eventDescriptionInput =
 // Counter to generate unique event IDs
 let eventIdCounter = 1;
 
-
+document.getElementById('datePicker').value = toDateInputValue(new Date());
 
 // Get the modal
 var modal = document.getElementById("myModal");
 
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
+
+
+function toDateInputValue(dateObject) {
+	const local = new Date(dateObject);
+	local.setMinutes(dateObject.getMinutes() - dateObject.getTimezoneOffset());
+	return local.toJSON().slice(0, 10);
+};
 
 // Function to add events
 function addEvent() {
@@ -231,6 +238,7 @@ function chooseDay(e) {
 	}
 	
 	var day = e.target.getAttribute("data-date")
+	document.getElementById('datePicker').value = toDateInputValue(new Date(e.target.getAttribute("data-year"), e.target.getAttribute("data-month") - 1, e.target.getAttribute("data-date")));
 	e.target.classList.add('selected-day');
 	
 	var toDoThingsContainer = document.getElementById('toDoThingsContainerId');
@@ -239,6 +247,10 @@ function chooseDay(e) {
 		toDoThingsContainer.classList.remove('todothings-container-hidden');
 		toDoThingsContainer.classList.add('todothings-container-visible')
 	}
+}
+
+function saveToDoThing() {
+
 }
 
 function openAddToDoThingWindow() {

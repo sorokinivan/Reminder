@@ -17,7 +17,8 @@ namespace ReminderWebApp.Services
         {
             var today = DateTime.Today;
             var tomorrow = DateTime.Today.AddDays(1);
-            return await _context.ToDoThings.Where(t => t.Date < tomorrow && t.Date > today).ToListAsync();
+
+			return await _context.ToDoThings.Where(t => t.Date < tomorrow && t.Date > today).ToListAsync();
         }
     }
 }
