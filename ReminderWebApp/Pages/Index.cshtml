@@ -4,11 +4,7 @@
     ViewData["Title"] = "Home page";
 }
 
-@section Sidebar{
-    <div class="col-md-3">
-        @await Component.InvokeAsync("ToDoThings")
-    </div>
-}
+
 <!-- index.html -->
 <!--TODO Отображение дел на календаре-->
 <head>
@@ -19,14 +15,29 @@
 	<link rel="stylesheet" href="~/css/calendar.css" asp-append-version="true" />
 </head>
 
-<body>
-	<div id="myModal" class="modal">
-
-		<!-- Modal content -->
-		<div class="modal-content">
-			<span class="close">&times;</span>
-			<p>Some text in the Modal..</p>
+	@section Sidebar {
+		<div class="col-md-3">
+			@await Component.InvokeAsync("ToDoThings")
 		</div>
+	}
+	<div id="myModal" class="modal">
+<form method="post">
+			<!-- Modal content -->
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				<p>Some text in the Modal..</p>
+				<input id="datePicker" type="date" asp-for="Input.Date" readonly="@(true)"/>
+				<input asp-for="Input.Time" />
+				<input asp-for="Input.Title" />
+				<textarea asp-for="Input.Description"></textarea>
+				<button class="todothings-button" id="saveToDoThingWindowButtonId"
+						onclick="saveToDoThing()">
+					Сохранить
+				</button>
+			</div>
+			<button type="submit" class="btn btn-primary btn-block">Create Greetings</button>
+</form>
+		
 
 	</div>
 	<!-- Main wrapper for the calendar application -->
@@ -88,9 +99,7 @@
 	
 	<!-- Include the JavaScript file for the calendar functionality -->
 	<script src="~/js/calendar.js"></script>
-</body>
 
-</html>
 
 
 
