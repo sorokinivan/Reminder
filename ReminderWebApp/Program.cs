@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ReminderWebApp.Data;
+using ReminderWebApp.Services;
 
 namespace ReminderWebApp
 {
@@ -19,7 +20,7 @@ namespace ReminderWebApp
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddRazorPages();
-
+            builder.Services.AddTransient<IToDoThingService, ToDoThingService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
