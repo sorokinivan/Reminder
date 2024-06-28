@@ -20,7 +20,7 @@ namespace ReminderWebApp.Pages
         }
         [BindProperty]
         public List<ToDoThing> ToDoThings { get; set; }
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGet(DateTime? date)
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -29,7 +29,17 @@ namespace ReminderWebApp.Pages
                 return Forbid();
             }
 
-            ToDoThings = await _context.ToDoThings.Where(t => t.UserId == user.Id).ToListAsync();
+            var query = _context.ToDoThings.Where(t => t.UserId == user.Id);
+
+            if(date != null)
+            {
+                var ToDt = date.Value.AddDays(1);
+
+                query = query.Where(t => t.Date < ToDt && t.Date > date.Value.Date);
+            }
+
+            ToDoThings = await query.ToListAsync();
+
             return Page();
         }
     }

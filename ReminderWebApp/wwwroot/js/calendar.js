@@ -22,6 +22,7 @@ var modal = document.getElementById("myModal");
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
 
+let chosenDate = new Date()
 
 function toDateInputValue(dateObject) {
 	const local = new Date(dateObject);
@@ -238,7 +239,9 @@ function chooseDay(e) {
 	}
 	
 	var day = e.target.getAttribute("data-date")
-	document.getElementById('datePicker').value = toDateInputValue(new Date(e.target.getAttribute("data-year"), e.target.getAttribute("data-month") - 1, e.target.getAttribute("data-date")));
+	chosenDate = new Date(e.target.getAttribute("data-year"), e.target.getAttribute("data-month") - 1, e.target.getAttribute("data-date"))
+	chosenDate.setHours(chosenDate.getHours() + 3)
+	document.getElementById('datePicker').value = toDateInputValue(chosenDate);
 	e.target.classList.add('selected-day');
 	
 	var toDoThingsContainer = document.getElementById('toDoThingsContainerId');
@@ -258,7 +261,7 @@ function openAddToDoThingWindow() {
 }
 
 function openAllToDoThingWindow() {
-	modal.style.display = "block";
+	document.location.href = '/AllToDoThings?date=' + chosenDate.toJSON()
 }
 
 // Function to check if there are events on a specific date
