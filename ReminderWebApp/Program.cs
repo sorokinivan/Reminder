@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ReminderWebApp.Data;
 using ReminderWebApp.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace ReminderWebApp
 {
@@ -17,9 +18,12 @@ namespace ReminderWebApp
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddRazorPages();
+
             builder.Services.AddTransient<IToDoThingService, ToDoThingService>();
             var app = builder.Build();
 

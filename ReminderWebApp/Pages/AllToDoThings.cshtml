@@ -1,0 +1,11 @@
+﻿@page
+@model ReminderWebApp.Pages.AllToDoThingsModel
+@{
+}
+
+<ul>
+    @foreach (var todothing in Model.ToDoThings)
+    {
+        <li><a asp-page="/ToDoThing" asp-route-Id="@todothing.Id">@todothing.Title</a></li>
+    }
+</ul>
