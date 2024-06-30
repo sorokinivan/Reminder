@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using ReminderWebApp.Data.Models;
 using ReminderWebApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReminderWebApp.Pages
 {
@@ -9,14 +10,8 @@ namespace ReminderWebApp.Pages
     {
         private ApplicationDbContext _context;
 
-        
-        public class ToDoThing
-        {
-            public required string Title { get; set; }
-            public string? Description { get; set; }
-        }
         [BindProperty]
-        public ToDoThing toDoThing { get; set; }
+        public ToDoThing ToDoThing { get; set; }
         public ToDoThingModel(ApplicationDbContext context)
         {
             _context = context;
@@ -24,14 +19,14 @@ namespace ReminderWebApp.Pages
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var result = await _context.ToDoThings.Where(t => t.Id == id).Select(t => new ToDoThing{ Title = t.Title, Description = t.Description }).FirstOrDefaultAsync();
+            var result = await _context.ToDoThings.Where(t => t.Id == id).FirstOrDefaultAsync();
 
-            if(result == null)
+            if (result == null)
             {
                 return Redirect("Index");
             }
 
-            toDoThing = result;
+            ToDoThing = result;
             return Page();
         }
     }
