@@ -1,0 +1,14 @@
+﻿@page "{id:int}"
+@model ReminderWebApp.Pages.ChangeToDoThingModel
+@{
+}
+
+<form method="post">
+    <input asp-for="ToDoThing.Date" />
+    <input asp-for="ToDoThing.Title" />
+    <textarea asp-for="ToDoThing.Description"></textarea>
+    <button type="submit">Сохранить</button>
+</form>
+<button asp-page="/ToDoThing" asp-route-Id="ToDoThing.Id">
+    Отмена
+</button>
