@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using ReminderWebApp.Data;
 using ReminderWebApp.Data.Models;
+using ReminderWebApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReminderWebApp.Pages
 {
@@ -21,12 +21,12 @@ namespace ReminderWebApp.Pages
         {
             var result = await _context.ToDoThings.Where(t => t.Id == id).FirstOrDefaultAsync();
 
-            if(result == null)
+            if (result == null)
             {
                 return Redirect("Index");
             }
 
-			ToDoThing = result;
+            ToDoThing = result;
             return Page();
         }
     }

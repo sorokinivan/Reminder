@@ -6,13 +6,13 @@ using ReminderWebApp.Data.Models;
 
 namespace ReminderWebApp.Pages
 {
-    public class ChangeToDoThingModel : PageModel
+    public class EditToDoThingModel : PageModel
     {
         private ApplicationDbContext _context;
 
         [BindProperty]
         public ToDoThing ToDoThing { get; set; }
-        public ChangeToDoThingModel(ApplicationDbContext context)
+        public EditToDoThingModel(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -44,7 +44,7 @@ namespace ReminderWebApp.Pages
 
             await _context.SaveChangesAsync();
 
-            return Page();
+            return Redirect("/ToDoThing/"+id);
         }
     }
 }

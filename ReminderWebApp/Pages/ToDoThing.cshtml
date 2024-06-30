@@ -2,10 +2,7 @@
 @model ReminderWebApp.Pages.ToDoThingModel
 @{
 }
-
 @Model.ToDoThing.Date
 @Model.ToDoThing.Title
 @Model.ToDoThing.Description
-<button>
-    <a asp-page="/ChangeToDoThing" asp-route-Id="ToDoThing.Id">Изменить</a>
-</button>
+<a asp-page="/EditToDoThing" asp-route-Id="@Model.ToDoThing.Id">Изменить</a>
