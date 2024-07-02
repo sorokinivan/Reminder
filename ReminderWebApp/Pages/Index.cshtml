@@ -8,98 +8,99 @@
 <!-- index.html -->
 <!--TODO Отображение дел на календаре-->
 <head>
-	<meta charset="cp1251">
-	<meta name="viewport"
-		  content="width=device-width,
+    <meta charset="cp1251">
+    <meta name="viewport"
+          content="width=device-width,
 				initial-scale=1.0">
-	<link rel="stylesheet" href="~/css/calendar.css" asp-append-version="true" />
-	<link rel="stylesheet" href="~/css/todothing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/calendar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/todothing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/modal.css" asp-append-version="true" />
 </head>
 
-	@section Sidebar {
-		<div class="col-md-3">
-			@await Component.InvokeAsync("ToDoThings")
-		</div>
-	}
-	<div id="myModal" class="modal">
-<form method="post">
-			<!-- Modal content -->
-			<div class="modal-content">
-				<span class="close">&times;</span>
-				<p>Some text in the Modal..</p>
-				<input id="datePicker" type="date" asp-for="Input.Date" readonly="@(true)"/>
-				<input asp-for="Input.Time" />
-				<input asp-for="Input.Title" />
-				<textarea asp-for="Input.Description"></textarea>
-				<button class="todothings-button" id="saveToDoThingWindowButtonId"
-						onclick="saveToDoThing()">
-					Сохранить
-				</button>
-			</div>
-			<button type="submit" class="btn btn-primary btn-block">Create Greetings</button>
-</form>
-		
+@section Sidebar {
+    <div class="col-md-3">
+        @await Component.InvokeAsync("ToDoThings")
+    </div>
+}
+<div id="myModal" class="modal">
+    <form method="post">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>Some text in the Modal..</p>
+            <input id="datePicker" type="date" asp-for="Input.Date" readonly="@(true)" />
+            <input asp-for="Input.Time" />
+            <input asp-for="Input.Title" />
+            <textarea asp-for="Input.Description"></textarea>
+            <button class="todothings-button" id="saveToDoThingWindowButtonId"
+                    onclick="saveToDoThing()">
+                Сохранить
+            </button>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Create Greetings</button>
+    </form>
 
-	</div>
-	<!-- Main wrapper for the calendar application -->
-	<div class="wrapper">
-		<div class="container-calendar">
-			<div id="calendar">
-				<div class="calendar-header-container">
-						<button class="button-calendar" id="previous"
-								onclick="previous()">
-							‹
-						</button>
-						<h3 id="monthAndYear"></h3>
-						<button class="button-calendar" id="next"
-								onclick="next()">
-							›
-						</button>
-				</div>
-				
-				<table class="table-calendar"
-					   id="calendar"
-					   data-lang="en">
-					<thead id="thead-month"></thead>
-					<!-- Table body for displaying the calendar -->
-					<tbody id="calendar-body"></tbody>
-				</table>
-				<div class="footer-container-calendar">
-					<label for="month">Перейти на: </label>
-					<!-- Dropdowns to select a specific month and year -->
-					<select id="month" onchange="jump()">
-						<option value=0>Янв</option>
-						<option value=1>Фев</option>
-						<option value=2>Мар</option>
-						<option value=3>Апр</option>
-						<option value=4>Май</option>
-						<option value=5>Июн</option>
-						<option value=6>Июл</option>
-						<option value=7>Авг</option>
-						<option value=8>Сен</option>
-						<option value=9>Окт</option>
-						<option value=10>Ноя</option>
-						<option value=11>Дек</option>
-					</select>
-					<!-- Dropdown to select a specific year -->
-					<select id="year" onchange="jump()"></select>
-				</div>
-				<div id="toDoThingsContainerId" class="todothings-container-hidden">
-					<button class="todothings-button" id="openAddToDoThingWindowButtonId"
-							onclick="openAddToDoThingWindow()">
-						Добавить новое дело
-					</button>
-					<button class="todothings-button" id="openAllToDoThingWindowButtonId"
-							onclick="openAllToDoThingWindow()">
-						Все дела на день
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<!-- Include the JavaScript file for the calendar functionality -->
-	<script src="~/js/calendar.js"></script>
+
+</div>
+<!-- Main wrapper for the calendar application -->
+<div class="wrapper">
+    <div class="container-calendar">
+        <div id="calendar">
+            <div class="calendar-header-container">
+                <button class="button-calendar" id="previous"
+                        onclick="previous()">
+                    ‹
+                </button>
+                <h3 id="monthAndYear"></h3>
+                <button class="button-calendar" id="next"
+                        onclick="next()">
+                    ›
+                </button>
+            </div>
+
+            <table class="table-calendar"
+                   id="calendar"
+                   data-lang="en">
+                <thead id="thead-month"></thead>
+                <!-- Table body for displaying the calendar -->
+                <tbody id="calendar-body"></tbody>
+            </table>
+            <div class="footer-container-calendar">
+                <label for="month">Перейти на: </label>
+                <!-- Dropdowns to select a specific month and year -->
+                <select id="month" onchange="jump()">
+                    <option value=0>Янв</option>
+                    <option value=1>Фев</option>
+                    <option value=2>Мар</option>
+                    <option value=3>Апр</option>
+                    <option value=4>Май</option>
+                    <option value=5>Июн</option>
+                    <option value=6>Июл</option>
+                    <option value=7>Авг</option>
+                    <option value=8>Сен</option>
+                    <option value=9>Окт</option>
+                    <option value=10>Ноя</option>
+                    <option value=11>Дек</option>
+                </select>
+                <!-- Dropdown to select a specific year -->
+                <select id="year" onchange="jump()"></select>
+            </div>
+            <div id="toDoThingsContainerId" class="todothings-container-hidden">
+                <button class="todothings-button" id="openAddToDoThingWindowButtonId"
+                        onclick="openAddToDoThingWindow()">
+                    Добавить новое дело
+                </button>
+                <button class="todothings-button" id="openAllToDoThingWindowButtonId"
+                        onclick="openAllToDoThingWindow()">
+                    Все дела на день
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include the JavaScript file for the calendar functionality -->
+<script src="~/js/calendar.js"></script>
 
 
 
