@@ -19,7 +19,7 @@ namespace ReminderWebApp.Pages
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var result = await _context.ToDoThings.Where(t => t.Id == id).FirstOrDefaultAsync();
+            var result = await _context.ToDoThings.FirstOrDefaultAsync(t => t.Id == id);
 
             if (result == null)
             {
@@ -28,6 +28,22 @@ namespace ReminderWebApp.Pages
 
             ToDoThing = result;
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostDeleteAsync(int id)
+        {
+            var result = await _context.ToDoThings.FirstOrDefaultAsync(t => t.Id == id);
+
+            if(result == null)
+            {
+                return BadRequest();
+            }
+
+            _context.ToDoThings.Remove(result);
+
+            await _context.SaveChangesAsync();
+
+            return Redirect("/AllToDoThings");
         }
     }
 }

@@ -2,7 +2,44 @@
 @model ReminderWebApp.Pages.ToDoThingModel
 @{
 }
+
+<head>
+    <meta charset="cp1251">
+    <meta name="viewport"
+          content="width=device-width,
+				initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/calendar.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/todothing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/modal.css" asp-append-version="true" />
+</head>
+
 @Model.ToDoThing.Date
 @Model.ToDoThing.Title
 @Model.ToDoThing.Description
 <a asp-page="/EditToDoThing" asp-route-Id="@Model.ToDoThing.Id">Изменить</a>
+<a onclick="openDeleteToDoThingWindow()">Удалить</a>
+
+<div id="myModal" class="modal">
+    <span class="close">&times;</span>
+    Вы уверены, что хотите удалить напоминание?
+    <form asp-page-handler="delete" method="post">
+        <button class="todothings-button">
+            Удалить
+        </button>
+    </form>
+    <button class="todothings-button"
+            onclick="closeModal()">
+        Отмена
+    </button>
+</div>
+
+<script>
+    var modal = document.getElementById("myModal");
+    span.onclick = closeModal()
+    function closeModal() {
+        modal.style.display = "none";
+    }
+    function openDeleteToDoThingWindow() {
+        modal.style.display = "block";
+    }
+</script>
