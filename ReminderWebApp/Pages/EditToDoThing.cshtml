@@ -7,8 +7,9 @@
     <input asp-for="ToDoThing.Date" />
     <input asp-for="ToDoThing.Title" />
     <textarea asp-for="ToDoThing.Description"></textarea>
+    <input asp-for="ToDoThing.RemindTime" type="time"/>
     <button type="submit">Сохранить</button>
 </form>
-<a asp-page="/ToDoThing" asp-route-Id="@Model.ToDoThing.Id">
+<a asp-page="/ToDoThing" asp-route-Id="id">
     Отмена
 </a>

@@ -8,5 +8,6 @@
         public string? Description { get; set; }
         public bool IsDeleted { get; set; }
         public string UserId { get; set; }
+        public double RemindTime { get; set; }
     }
 }
