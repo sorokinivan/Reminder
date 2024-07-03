@@ -16,6 +16,7 @@
 @Model.ToDoThing.Date
 @Model.ToDoThing.Title
 @Model.ToDoThing.Description
+@($"{TimeSpan.FromMinutes(Model.ToDoThing.RemindTime):hh\\:mm}")
 <a asp-page="/EditToDoThing" asp-route-Id="@Model.ToDoThing.Id">Изменить</a>
 <a onclick="openDeleteToDoThingWindow()">Удалить</a>
 

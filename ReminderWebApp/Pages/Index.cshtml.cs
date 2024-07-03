@@ -16,6 +16,7 @@ namespace ReminderWebApp.Pages
 		public DateTime Date { get; set; }
 		[DataType(DataType.Time)]
         public DateTime Time { get; set; }
+        public TimeSpan RemindTime { get; set; }
 	}
 
 	public class IndexModel : PageModel
@@ -40,7 +41,6 @@ namespace ReminderWebApp.Pages
         public async Task<IActionResult> OnGet()
         {
             var student = await _context.Students.ToListAsync();
-            Name = student.FirstOrDefault().LastName;
             return Page();
         }
 
@@ -58,7 +58,8 @@ namespace ReminderWebApp.Pages
                 Date = new DateTime(Input.Date.Year, Input.Date.Month, Input.Date.Day, Input.Time.Hour, Input.Time.Minute, 0),
                 Title = Input.Title,
                 Description = Input.Description,
-                UserId = user.Id
+                UserId = user.Id,
+                RemindTime = Input.RemindTime.TotalMinutes
             };
             _context.ToDoThings.Add(newToDoThing);
             await _context.SaveChangesAsync();
