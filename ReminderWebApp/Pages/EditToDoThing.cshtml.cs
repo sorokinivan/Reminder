@@ -9,6 +9,7 @@ namespace ReminderWebApp.Pages
 {
     public class ToDoThingModelForEdit
     {
+        public int Id { get; set; }
         public required string Title { get; set; }
         public string? Description { get; set; }
         [DataType(DataType.Date)]
@@ -32,6 +33,7 @@ namespace ReminderWebApp.Pages
         {
             var result = await _context.ToDoThings.Where(t => t.Id == id).Select(t => new ToDoThingModelForEdit
             {
+                Id = t.Id,
                 Title = t.Title,
                 Description = t.Description,
                 Date = t.Date,

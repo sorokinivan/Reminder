@@ -10,6 +10,6 @@
     <input asp-for="ToDoThing.RemindTime" type="time"/>
     <button type="submit">Сохранить</button>
 </form>
-<a asp-page="/ToDoThing" asp-route-Id="id">
+<a asp-page="/ToDoThing" asp-route-Id="@Model.ToDoThing.Id">
     Отмена
 </a>

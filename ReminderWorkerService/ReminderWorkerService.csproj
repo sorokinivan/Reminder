@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-ReminderWorkerService-b85e379b-5fbf-467e-8209-84a4a6ea5562</UserSecretsId>
+	  <UserSecretsId>000872fa-192e-4eaf-a608-3e9ae01d3c4f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,5 +18,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Telegram.Bot" Version="19.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="EmailSenderLibrary">
+      <HintPath>libs\EmailSenderLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
