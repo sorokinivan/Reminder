@@ -5,7 +5,7 @@ namespace EmailSenderLibrary
 {
     public class EmailSender
     {
-        public async Task SendEmailAsync(string emailLogin, string emailPassword, string fromEmail, string[] recipients, string subject, string body)
+        public void SendEmail(string emailLogin, string emailPassword, string fromEmail, string[] recipients, string subject, string body)
         {
             using (var client = new SmtpClient("smtp-mail.outlook.com", 587)
             {
@@ -28,7 +28,9 @@ namespace EmailSenderLibrary
                     message.To.Add(recipient);
                 }
 
-                await client.SendMailAsync(message);
+                client.Send(message);
+
+                message.Dispose();
             }
         }
     }

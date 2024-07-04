@@ -16,5 +16,6 @@ namespace ReminderWorkerService.Data
         }
 
         public DbSet<ToDoThing> ToDoThings { get; set; }
+        public DbSet<AspNetUsers> AspNetUsers { get; set;}
     }
 }
