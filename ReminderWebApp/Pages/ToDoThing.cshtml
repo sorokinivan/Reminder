@@ -11,32 +11,38 @@
     <link rel="stylesheet" href="~/css/calendar.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/todothing.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/modal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/general.css" asp-append-version="true" />
 </head>
 
-@Model.ToDoThing.Date
-@Model.ToDoThing.Title
-@Model.ToDoThing.Description
-@($"{TimeSpan.FromMinutes(Model.ToDoThing.RemindTime):hh\\:mm}")
-<a asp-page="/EditToDoThing" asp-route-Id="@Model.ToDoThing.Id">Изменить</a>
-<a onclick="openDeleteToDoThingWindow()">Удалить</a>
+<h4>Дата и время напоминания</h4> @Model.ToDoThing.Date
+<h4>Название напоминания</h4> @Model.ToDoThing.Title
+<h4>Описание напоминания</h4> @Model.ToDoThing.Description
+<h4>За сколько до начала события отправлять уведомление (Часы : Минуты)</h4> @($"{TimeSpan.FromMinutes(Model.ToDoThing.RemindTime):hh\\:mm}")
+<div class="todothings-buttons-container">
+    <a class="todothings-button" asp-page="/EditToDoThing" asp-route-Id="@Model.ToDoThing.Id">Изменить</a>
+    <button class="todothings-button" onclick="openDeleteToDoThingWindow()">Удалить</button>
+</div>
 
 <div id="myModal" class="modal">
-    <span class="close">&times;</span>
-    Вы уверены, что хотите удалить напоминание?
-    <form asp-page-handler="delete" method="post">
-        <button class="todothings-button">
-            Удалить
-        </button>
-    </form>
-    <button class="todothings-button"
-            onclick="closeModal()">
-        Отмена
-    </button>
+    <div class="modal-content">
+        Вы уверены, что хотите удалить напоминание?
+        <div class="flex horizontal-center">
+            <form asp-page-handler="delete" method="post">
+                <button class="todothings-button">
+                    Удалить
+                </button>
+            </form>
+            <button class="todothings-button"
+                    onclick="closeModal()">
+                Отмена
+            </button>
+        </div>
+    </div>
 </div>
 
 <script>
     var modal = document.getElementById("myModal");
-    span.onclick = closeModal()
+
     function closeModal() {
         modal.style.display = "none";
     }

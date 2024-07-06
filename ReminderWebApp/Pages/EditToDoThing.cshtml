@@ -3,13 +3,24 @@
 @{
 }
 
+<head>
+    <meta charset="cp1251">
+    <meta name="viewport"
+          content="width=device-width,
+				initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/todothing.css" asp-append-version="true" />
+</head>
+
 <form method="post">
-    <input asp-for="ToDoThing.Date" />
-    <input asp-for="ToDoThing.Title" />
-    <textarea asp-for="ToDoThing.Description"></textarea>
-    <input asp-for="ToDoThing.RemindTime" type="time"/>
-    <button type="submit">Сохранить</button>
+    <h4>Дата и время напоминания</h4> <input asp-for="ToDoThing.Date" />
+    <h4>Название напоминания</h4> <input asp-for="ToDoThing.Title" />
+    <h4>Описание напоминания</h4> <textarea asp-for="ToDoThing.Description"></textarea>
+    <h4>За сколько до начала события отправлять уведомление (Часы : Минуты)</h4> <input asp-for="ToDoThing.RemindTime" type="time" />
+    <div class="todothings-buttons-container">
+        <button class="todothings-button" type="submit">Сохранить</button>
+        <a class="todothings-button" asp-page="/ToDoThing" asp-route-Id="@Model.ToDoThing.Id">
+            Отмена
+        </a>
+    </div>
 </form>
-<a asp-page="/ToDoThing" asp-route-Id="@Model.ToDoThing.Id">
-    Отмена
-</a>
+

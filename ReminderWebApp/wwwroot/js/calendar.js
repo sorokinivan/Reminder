@@ -232,6 +232,7 @@ function getEventsOnDate(date, month, year) {
 
 function chooseDay(e) {
 	debugger;
+	
 	var previousSelected = document.getElementsByClassName("selected-day");
 
 	if (previousSelected.length) {
@@ -242,8 +243,15 @@ function chooseDay(e) {
 	chosenDate = new Date(e.target.getAttribute("data-year"), e.target.getAttribute("data-month") - 1, e.target.getAttribute("data-date"))
 	chosenDate.setHours(chosenDate.getHours() + 3)
 	document.getElementById('datePicker').value = toDateInputValue(chosenDate);
-	e.target.classList.add('selected-day');
 	
+	if (e.target.tagName == 'SPAN') {
+		let cell = document.querySelector('[data-date="' + this.innerText + '"]')
+		cell.classList.add('selected-day');
+	}
+	else {
+		e.target.classList.add('selected-day');
+	}
+
 	var toDoThingsContainer = document.getElementById('toDoThingsContainerId');
 
 	if (toDoThingsContainer.classList.contains('todothings-container-hidden')) {

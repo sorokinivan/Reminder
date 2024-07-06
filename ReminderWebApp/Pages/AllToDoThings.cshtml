@@ -3,9 +3,18 @@
 @{
 }
 
-<ul>
-    @foreach (var todothing in Model.ToDoThings)
+<head>
+    <meta charset="cp1251">
+    <meta name="viewport"
+          content="width=device-width,
+				initial-scale=1.0">
+    <link rel="stylesheet" href="~/css/todothing.css" asp-append-version="true" />
+</head>
+
+<ul class="all-todothings-ul">
+    @foreach (var todothing in Model.ToDoThings.OrderBy(t => t.Date))
     {
-        <li><a asp-page="/ToDoThing" asp-route-Id="@todothing.Id">@todothing.Title</a></li>
+
+        <li class="all-todothings-li"><a class="all-todothings-href" asp-page="/ToDoThing" asp-route-Id="@todothing.Id">@(todothing.Date.ToString() + " / " + todothing.Title)</a></li>
     }
 </ul>
