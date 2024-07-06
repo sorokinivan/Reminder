@@ -1,9 +1,10 @@
 ﻿.todothings-button {
+    margin-top: 10px;
     margin-left: 5px;
     margin-right: 5px;
     appearance: none;
     backface-visibility: hidden;
-    background-color: #27ae60;
+    background-color: green;
     border-radius: 8px;
     border-style: none;
     box-shadow: rgba(39, 174, 96, .15) 0 4px 9px;
@@ -29,13 +30,15 @@
     touch-action: manipulation;
     vertical-align: top;
     white-space: nowrap;
+    width: auto;
 }
 
     .todothings-button:hover {
-        background-color: #1e8449;
+        background-color: darkgreen;
         opacity: 1;
         transform: translateY(0);
         transition-duration: .35s;
+        color:white;
     }
 
     .todothings-button:active {
@@ -53,4 +56,43 @@
 
 .todothings-container-hidden {
     display: none;
+}
+
+.all-todothings-ul {
+    list-style-type: none;
+}
+
+.all-todothings-li {
+    border-bottom: solid 1px;
+    border-color: green;
+}
+
+    .all-todothings-li :hover {
+        border-bottom: solid 1px;
+        border-color: green;
+        background-color: lightgray;
+    }
+
+.all-todothings-href:link {
+    text-decoration: none;
+    color: black;
+}
+
+.all-todothings-href:visited {
+    text-decoration: none;
+    color: black;
+}
+
+.all-todothings-href:hover {
+    text-decoration: none;
+    color: black;
+}
+
+.all-todothings-href:active {
+    text-decoration: none;
+    color: black;
+}
+
+.todothings-buttons-container{
+    margin-top: 20px;
 }

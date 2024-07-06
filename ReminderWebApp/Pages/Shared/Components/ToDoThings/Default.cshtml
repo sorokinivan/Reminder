@@ -1,8 +1,8 @@
 ﻿@model List<ReminderWebApp.Data.Models.ToDoThing>
-<h3>Дела на сегодня</h3>
+<h3 class="text-center">Дела на сегодня</h3>
 <ul>
     @foreach (var todothing in Model)
     {
-        <li><a asp-page="/ToDoThing" asp-route-Id="@todothing.Id">@todothing.Title</a></li>
+        <li class="text-center"><a asp-page="/ToDoThing" asp-route-Id="@todothing.Id">@todothing.Title</a></li>
     }
 </ul>

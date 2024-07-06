@@ -15,10 +15,11 @@
     <link rel="stylesheet" href="~/css/calendar.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/todothing.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/modal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/general.css" asp-append-version="true" />
 </head>
 
 @section Sidebar {
-    <div class="col-md-3">
+    <div class="sidebar col-md-3 section-vertical-delimiter">
         @await Component.InvokeAsync("ToDoThings")
     </div>
 }
@@ -27,11 +28,15 @@
         <!-- Modal content -->
         <div class="modal-content">
             <span class="close">&times;</span>
-            <p>Some text in the Modal..</p>
+            Дата напоминания
             <input id="datePicker" type="date" asp-for="Input.Date" readonly="@(true)" />
+            Время напоминания
             <input asp-for="Input.Time" />
+            Заголовок напоминания
             <input asp-for="Input.Title" />
+            Подробное описание
             <textarea asp-for="Input.Description"></textarea>
+            За сколько нужно напомнить
             <input type="time" asp-for="Input.RemindTime"/>
             <button class="todothings-button" id="saveToDoThingWindowButtonId"
                     onclick="saveToDoThing()">
