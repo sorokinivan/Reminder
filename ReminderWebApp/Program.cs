@@ -17,10 +17,12 @@ namespace ReminderWebApp
             var builder = WebApplication.CreateBuilder(args);
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
-                .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+                //.MinimumLevel.Information()
+                //.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                //.MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+                //.WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+                .ReadFrom.Configuration(builder.Configuration)
+                .CreateLogger();
             builder.Services.AddSerilog();
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");

@@ -8,6 +8,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
+using Serilog;
 
 namespace ReminderWorkerService
 {
@@ -43,7 +44,7 @@ namespace ReminderWorkerService
             {
                 if (_logger.IsEnabled(LogLevel.Information))
                 {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                    _logger.LogInformation("Сервис запущен");
                 }
 
                 var now = DateTime.Now;
@@ -55,7 +56,7 @@ namespace ReminderWorkerService
 
                     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     var toDoThings = await context.ToDoThings.Where(t => t.RemindTime == 0 && t.Date == checkDateTime || t.RemindTime != 0 && t.Date == checkDateTime.AddMinutes(t.RemindTime)).Include(t => t.AspNetUser).ToListAsync();
-                    _logger.LogInformation("�������� ���� {time}, ���������� {count} ���", DateTimeOffset.Now, toDoThings.Count);
+                    _logger.LogInformation("Получено {count} событий",toDoThings.Count);
                     if (toDoThings.Any())
                     {
                         var emailLogin = _config["emailSenderEmail"];
@@ -64,11 +65,13 @@ namespace ReminderWorkerService
                         foreach (var toDoThing in toDoThings)
                         {
                             emailSender.SendEmail(emailLogin, password, emailLogin, [toDoThing.AspNetUser.Email], toDoThing.Title, toDoThing.Description);
+                            _logger.LogInformation("Отправлено email сообщение на почту {email} по событию с Id {id}", toDoThing.AspNetUser.Email, toDoThing.Id);
                             if (toDoThing.AspNetUser.TelegramChatId != null)
                             {
                                 await botClient.SendTextMessageAsync(
                                 toDoThing.AspNetUser.TelegramChatId,
                                 toDoThing.Title + " - " + toDoThing.Description);
+                                _logger.LogInformation("Отправлено сообщение в Telegram по ChatId {chatId} по событию с Id {id}", toDoThing.AspNetUser.TelegramChatId, toDoThing.Id);
                             }
                         }
                     }
@@ -91,8 +94,10 @@ namespace ReminderWorkerService
                             {
                                 await botClient.SendTextMessageAsync(
                                     update.Message.Chat.Id,
-                                    "������ ����! ����������, �������� ���� Id ������������, ��������� � ������� � ���-����������, ����� � ��� ���������� ��� ����������� � ��������, ��������� � ���-���������� (��������, ��������� ������ ��������� ������ ID �������)",
+                                    "Здравствуйте! Пожалуйста, отправьте мне сообщение с Id вашего профиля в веб-приложении (его можно найти в профиле вашего аккаунта в веб-приложении ReminderApp), этот Id мне нужен, чтобы привязать ваш Telegram аккаунт к аккаунту в веб-приложении (пожалуйста, вводите ТОЛЬКО Id профиля)",
                                     replyToMessageId: update.Message.MessageId);
+
+                                _logger.LogInformation("Запущено общение с ботом пользователем с ChatId {chatId}", update.Message.Chat.Id);
 
                                 break;
                             }
@@ -107,19 +112,22 @@ namespace ReminderWorkerService
 
                                     if (user != null)
                                     {
-                                        user.TelegramChatId = update.Message.Chat.Id;
-                                        await context.SaveChangesAsync();
+                                        if(user.TelegramChatId == null)
+                                        {
+                                            user.TelegramChatId = update.Message.Chat.Id;
+                                            await context.SaveChangesAsync();
 
-                                        await botClient.SendTextMessageAsync(
-                                            update.Message.Chat.Id,
-                                            "�������! � ������� ���������� � ID �������",
-                                            replyToMessageId: update.Message.MessageId);
+                                            await botClient.SendTextMessageAsync(
+                                                update.Message.Chat.Id,
+                                                "Спасибо! Теперь я буду присылать вам уведомления о ваших событиях! Больше мне писать ничего не нужно, я буду делать все сам :)",
+                                                replyToMessageId: update.Message.MessageId);
+                                        }
                                     }
                                     else
                                     {
                                         await botClient.SendTextMessageAsync(
                                             update.Message.Chat.Id,
-                                            "��������, ID �� ������, ��������, �� �������� � ��� ���������, ���������� ��� ���",
+                                            "Извините, такого Id профиля в веб-приложении не существует, проверьте правильность ввода Id (Внимание, пожалуйста, пишите в сообщении ТОЛЬКО Id и ничего больше)",
                                             replyToMessageId: update.Message.MessageId);
                                     }
                                 }
@@ -142,6 +150,8 @@ namespace ReminderWorkerService
                     => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
                 _ => error.ToString()
             };
+
+            _logger.LogError(error.Message);
 
             Console.WriteLine(ErrorMessage);
             return Task.CompletedTask;
