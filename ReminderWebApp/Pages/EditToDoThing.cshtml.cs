@@ -41,6 +41,15 @@ namespace ReminderWebApp.Pages
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            var userId = await _userService.GetCurrentUserIdAsync();
+
+            var isToDoThingUser = await _toDoThingService.IsCurrentUserToDoThing(id, userId);
+
+            if (userId == null || !isToDoThingUser)
+            {
+                return Forbid();
+            }
+
             var toDoThing = await _toDoThingService.GetToDoThingByIdAsync(id);
 
             if (toDoThing == null)
@@ -73,7 +82,9 @@ namespace ReminderWebApp.Pages
 
                 var userId = await _userService.GetCurrentUserIdAsync();
 
-                if(userId == null)
+                var isToDoThingUser = await _toDoThingService.IsCurrentUserToDoThing(id, userId);
+
+                if (userId == null || !isToDoThingUser)
                 {
                     return Forbid();
                 }

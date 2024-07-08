@@ -119,5 +119,17 @@ namespace ReminderWebApp.Services.ToDoThingService
 
             return result;
         }
+
+        public async Task<bool> IsCurrentUserToDoThing(int id, string userId)
+        {
+            if(userId == null)
+            {
+                return false;
+            }
+
+            var toDoThingUserId = await _context.ToDoThings.Where(t => t.Id == id).Select(t => t.UserId).FirstOrDefaultAsync();
+
+            return userId == toDoThingUserId;
+        }
     }
 }
