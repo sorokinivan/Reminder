@@ -3,6 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using ReminderWebApp.Data;
 using ReminderWebApp.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using ReminderWebApp.Services.ToDoThingService;
+using ReminderWebApp.Services.UserService;
+using Serilog;
+using Serilog.Events;
 
 namespace ReminderWebApp
 {
@@ -12,6 +16,12 @@ namespace ReminderWebApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+                .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+            builder.Services.AddSerilog();
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -25,6 +35,7 @@ namespace ReminderWebApp
             builder.Services.AddRazorPages();
 
             builder.Services.AddTransient<IToDoThingService, ToDoThingService>();
+            builder.Services.AddTransient<IUserService, UserService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

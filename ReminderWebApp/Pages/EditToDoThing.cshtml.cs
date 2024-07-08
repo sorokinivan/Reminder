@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using ReminderWebApp.Data;
 using ReminderWebApp.Data.Models;
+using ReminderWebApp.Services.ToDoThingService;
+using ReminderWebApp.Services.UserService;
 using System.ComponentModel.DataAnnotations;
 
 namespace ReminderWebApp.Pages
@@ -10,61 +13,79 @@ namespace ReminderWebApp.Pages
     public class ToDoThingModelForEdit
     {
         public int Id { get; set; }
+        [Required(ErrorMessage = "Необходимо ввести название события")]
         public required string Title { get; set; }
         public string? Description { get; set; }
+        [Required(ErrorMessage = "Необходимо дату события")]
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
+        [Required(ErrorMessage = "Необходимо ввести время события")]
         [DataType(DataType.Time)]
         public DateTime Time { get; set; }
         public TimeSpan RemindTime { get; set; }
     }
+
+    [Authorize]
     public class EditToDoThingModel : PageModel
     {
-        private ApplicationDbContext _context;
+        private IToDoThingService _toDoThingService;
+        private IUserService _userService;
 
         [BindProperty]
         public ToDoThingModelForEdit ToDoThing { get; set; }
-        public EditToDoThingModel(ApplicationDbContext context)
+        public EditToDoThingModel(IToDoThingService toDoThingService, IUserService userService)
         {
-            _context = context;
+            _toDoThingService = toDoThingService;
+            _userService = userService;
         }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var result = await _context.ToDoThings.Where(t => t.Id == id).Select(t => new ToDoThingModelForEdit
-            {
-                Id = t.Id,
-                Title = t.Title,
-                Description = t.Description,
-                Date = t.Date,
-                RemindTime = TimeSpan.FromMinutes(t.RemindTime)
-            }).FirstOrDefaultAsync();
+            var toDoThing = await _toDoThingService.GetToDoThingByIdAsync(id);
 
-            if (result == null)
+            if (toDoThing == null)
             {
-                return Redirect("Index");
+                return Redirect("/Index");
             }
 
-            ToDoThing = result;
+            var editModel = new ToDoThingModelForEdit
+            {
+                Id = toDoThing.Id,
+                Title = toDoThing.Title,
+                Description = toDoThing.Description,
+                Date = toDoThing.Date,
+                RemindTime = TimeSpan.FromMinutes(toDoThing.RemindTime)
+            };
+
+            ToDoThing = editModel;
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
-            var toDoThing = await _context.ToDoThings.Where(t => t.Id == id).FirstOrDefaultAsync();
-            if (toDoThing == null)
+            try
             {
-                return BadRequest();
+                if(!ModelState.IsValid)
+                {
+                    return Page();
+                }
+
+                var userId = await _userService.GetCurrentUserIdAsync();
+
+                if(userId == null)
+                {
+                    return Forbid();
+                }
+
+                await _toDoThingService.ChangeToDoThingAsync(userId, id, ToDoThing.Title, ToDoThing.Description, ToDoThing.Date, ToDoThing.RemindTime.TotalMinutes);
+
+            return Redirect("/ToDoThing/" + id);
             }
-
-            toDoThing.Title = ToDoThing.Title;
-            toDoThing.Description = ToDoThing.Description;
-            toDoThing.Date = ToDoThing.Date;
-            toDoThing.RemindTime = ToDoThing.RemindTime.TotalMinutes;
-
-            await _context.SaveChangesAsync();
-
-            return Redirect("/ToDoThing/"+id);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

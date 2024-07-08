@@ -55,7 +55,7 @@ namespace ReminderWorkerService
 
                     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                     var toDoThings = await context.ToDoThings.Where(t => t.RemindTime == 0 && t.Date == checkDateTime || t.RemindTime != 0 && t.Date == checkDateTime.AddMinutes(t.RemindTime)).Include(t => t.AspNetUser).ToListAsync();
-                    _logger.LogInformation("Получаем дела {time}, обнаружено {count} дел", DateTimeOffset.Now, toDoThings.Count);
+                    _logger.LogInformation("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ {time}, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ {count} пїЅпїЅпїЅ", DateTimeOffset.Now, toDoThings.Count);
                     if (toDoThings.Any())
                     {
                         var emailLogin = _config["emailSenderEmail"];
@@ -91,7 +91,7 @@ namespace ReminderWorkerService
                             {
                                 await botClient.SendTextMessageAsync(
                                     update.Message.Chat.Id,
-                                    "Добрый день! Пожалуйста, напишите свой Id пользователя, указанный в профиле в веб-приложении, чтобы я мог отправлять вам напоминания о событиях, сохданных в веб-приложении (внимание, сообщение должно содержать ТОЛЬКО ID профиля)",
+                                    "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ Id пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ ID пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)",
                                     replyToMessageId: update.Message.MessageId);
 
                                 break;
@@ -112,14 +112,14 @@ namespace ReminderWorkerService
 
                                         await botClient.SendTextMessageAsync(
                                             update.Message.Chat.Id,
-                                            "Спасибо! Я успешно привязался к ID профиля",
+                                            "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ! пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ ID пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",
                                             replyToMessageId: update.Message.MessageId);
                                     }
                                     else
                                     {
                                         await botClient.SendTextMessageAsync(
                                             update.Message.Chat.Id,
-                                            "Извините, ID не найден, возможно, вы ошиблись в его написании, попробуйте еще раз",
+                                            "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, ID пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ",
                                             replyToMessageId: update.Message.MessageId);
                                     }
                                 }

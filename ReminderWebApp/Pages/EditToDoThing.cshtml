@@ -13,9 +13,12 @@
 
 <form method="post">
     <h4>Дата и время напоминания</h4> <input asp-for="ToDoThing.Date" />
+    <span asp-validation-for="ToDoThing.Date"></span>
     <h4>Название напоминания</h4> <input asp-for="ToDoThing.Title" />
+    <span asp-validation-for="ToDoThing.Title"></span>
     <h4>Описание напоминания</h4> <textarea asp-for="ToDoThing.Description"></textarea>
     <h4>За сколько до начала события отправлять уведомление (Часы : Минуты)</h4> <input asp-for="ToDoThing.RemindTime" type="time" />
+    <div asp-validation-summary="ModelOnly"></div>
     <div class="todothings-buttons-container">
         <button class="todothings-button" type="submit">Сохранить</button>
         <a class="todothings-button" asp-page="/ToDoThing" asp-route-Id="@Model.ToDoThing.Id">
