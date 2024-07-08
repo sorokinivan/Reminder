@@ -103,5 +103,21 @@ namespace ReminderWebApp.Services.ToDoThingService
 
             Log.Information("Создано новое событие с Id {0} пользователем {1}", newToDoThing.Id, userId);
         }
+
+        public async Task<List<int>> GetUserToDoThingsDaysForCurrentMonthAsync(string? userId)
+        {
+            if(userId == null)
+            {
+                return new List<int>();
+            }
+
+            var now = DateTime.Now;
+            var dateStartCurrentMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0);
+            var dateEndCurrentMonth = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month), 0, 0, 0);
+
+            var result = await _context.ToDoThings.Where(t => t.UserId == userId && t.Date > dateStartCurrentMonth && t.Date < dateEndCurrentMonth).Select(t => t.Date.Day).Distinct().ToListAsync();
+
+            return result;
+        }
     }
 }

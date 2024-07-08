@@ -10,5 +10,6 @@ namespace ReminderWebApp.Services.ToDoThingService
         Task<List<ToDoThing>> GetUserTodayToDoThingsByDateAsync(string userId, DateTime? date);
         Task ChangeToDoThingAsync(string userId, int id, string title, string description, DateTime date, double remindTime);
         Task AddNewToDoThingAsync(string userId, string title, string description, DateTime date, DateTime time, double remindTime);
+        Task<List<int>> GetUserToDoThingsDaysForCurrentMonthAsync(string? userId);
     }
 }
