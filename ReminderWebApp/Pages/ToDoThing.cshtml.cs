@@ -3,47 +3,58 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using ReminderWebApp.Data.Models;
 using ReminderWebApp.Data;
 using Microsoft.EntityFrameworkCore;
+using ReminderWebApp.Services.ToDoThingService;
+using ReminderWebApp.Services.UserService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ReminderWebApp.Pages
 {
+    [Authorize]
     public class ToDoThingModel : PageModel
     {
-        private ApplicationDbContext _context;
+        private IToDoThingService _toDoThingService;
+        private IUserService _userService;
 
         [BindProperty]
         public ToDoThing ToDoThing { get; set; }
-        public ToDoThingModel(ApplicationDbContext context)
+        public ToDoThingModel(IToDoThingService toDoThingService, IUserService userService)
         {
-            _context = context;
+            _toDoThingService = toDoThingService;
+            _userService = userService;
         }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var result = await _context.ToDoThings.FirstOrDefaultAsync(t => t.Id == id);
-
-            if (result == null)
+            try
             {
-                return Redirect("Index");
+                ToDoThing = await _toDoThingService.GetToDoThingByIdAsync(id);
+                return Page();
             }
-
-            ToDoThing = result;
-            return Page();
+            catch
+            {
+                return Redirect("/Index");
+            }
         }
 
         public async Task<IActionResult> OnPostDeleteAsync(int id)
         {
-            var result = await _context.ToDoThings.FirstOrDefaultAsync(t => t.Id == id);
-
-            if(result == null)
+            try
             {
-                return BadRequest();
+                var userId = await _userService.GetCurrentUserIdAsync();
+
+                if(userId == null)
+                {
+                    return Forbid();
+                }
+
+                await _toDoThingService.DeleteToDoThingByIdAsync(userId, id);
+
+                return Redirect("/AllToDoThings");
             }
-
-            _context.ToDoThings.Remove(result);
-
-            await _context.SaveChangesAsync();
-
-            return Redirect("/AllToDoThings");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
