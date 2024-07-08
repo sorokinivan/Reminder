@@ -1,4 +1,5 @@
 @page
+@using System.Text.Json
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
@@ -104,9 +105,13 @@
         </div>
     </div>
 </div>
-
+<script>
+    let daysWithToDoThings = @Html.Raw(JsonSerializer.Serialize(Model.DaysWithToDoThings));
+</script>
 <!-- Include the JavaScript file for the calendar functionality -->
 <script src="~/js/calendar.js"></script>
+
+
 
 
 

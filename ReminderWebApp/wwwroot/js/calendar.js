@@ -185,11 +185,11 @@ function showCalendar(month, year) {
 				}
 
 				// Check if there are events on this date
-				if (hasEventOnDate(date, month, year)) {
+				if (hasEventOnDate(date)) {
 					cell.classList.add("event-marker");
-					cell.appendChild(
-						createEventTooltip(date, month, year)
-					);
+					//cell.appendChild(
+					//	createEventTooltip(date, month, year)
+					//);
 				}
 
 				row.appendChild(cell);
@@ -273,8 +273,8 @@ function openAllToDoThingWindow() {
 }
 
 // Function to check if there are events on a specific date
-function hasEventOnDate(date, month, year) {
-	return getEventsOnDate(date, month, year).length > 0;
+function hasEventOnDate(date) {
+	return daysWithToDoThings.includes(date);
 }
 
 // Function to get the number of days in a month
