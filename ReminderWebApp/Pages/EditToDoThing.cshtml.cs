@@ -43,7 +43,7 @@ namespace ReminderWebApp.Pages
         {
             var userId = await _userService.GetCurrentUserIdAsync();
 
-            var isToDoThingUser = await _toDoThingService.IsCurrentUserToDoThing(id, userId);
+            var isToDoThingUser = await _toDoThingService.IsCurrentUserToDoThingAsync(id, userId);
 
             if (userId == null || !isToDoThingUser)
             {
@@ -82,7 +82,7 @@ namespace ReminderWebApp.Pages
 
                 var userId = await _userService.GetCurrentUserIdAsync();
 
-                var isToDoThingUser = await _toDoThingService.IsCurrentUserToDoThing(id, userId);
+                var isToDoThingUser = await _toDoThingService.IsCurrentUserToDoThingAsync(id, userId);
 
                 if (userId == null || !isToDoThingUser)
                 {

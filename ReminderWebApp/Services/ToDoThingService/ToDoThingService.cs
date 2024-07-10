@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using ReminderWebApp.Data;
 using ReminderWebApp.Data.Migrations;
@@ -22,7 +23,7 @@ namespace ReminderWebApp.Services.ToDoThingService
             var today = DateTime.Today;
             var tomorrow = DateTime.Today.AddDays(1);
 
-            return await _context.ToDoThings.Where(t => t.UserId == userId && t.Date < tomorrow && t.Date > today && !t.IsDeleted).ToListAsync();
+            return await _context.ToDoThings.Where(t => t.UserId == userId && t.Date < tomorrow && t.Date >= today && !t.IsDeleted).ToListAsync();
         }
 
         public async Task DeleteToDoThingByIdAsync(string userId, int id)
@@ -31,7 +32,7 @@ namespace ReminderWebApp.Services.ToDoThingService
 
             if (result == null)
             {
-                Log.Logger.Error("{0} - Не найдено событие с Id {1}", System.Reflection.MethodBase.GetCurrentMethod()?.Name ?? "Неизвестный метод", id);
+                Log.Logger.Error("{0} Не найдено событие с Id {1}", System.Reflection.MethodBase.GetCurrentMethod()?.Name ?? "Неизвестный метод", id);
                 throw new Exception("Такого события не существует");
             }
 
@@ -53,15 +54,16 @@ namespace ReminderWebApp.Services.ToDoThingService
 
             return result;
         }
-        public async Task<List<ToDoThing>> GetUserTodayToDoThingsByDateAsync(string userId, DateTime? date)
+        public async Task<List<ToDoThing>> GetUserToDoThingsByDateAsync(string userId, DateTime? date)
         {
             var query = _context.ToDoThings.Where(t => t.UserId == userId && !t.IsDeleted);
 
             if (date != null)
             {
-                var ToDt = date.Value.AddDays(1);
+                var nextDay = date.Value.AddDays(1);
+                var toDt = new DateTime(nextDay.Year, nextDay.Month, nextDay.Day);
 
-                query = query.Where(t => t.Date < ToDt && t.Date > date.Value.Date);
+                query = query.Where(t => t.UserId == userId && t.Date < toDt && t.Date >= date.Value.Date);
             }
 
             return await query.ToListAsync();
@@ -113,14 +115,12 @@ namespace ReminderWebApp.Services.ToDoThingService
 
             var now = DateTime.Now;
             var dateStartCurrentMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0);
-            var dateEndCurrentMonth = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month), 0, 0, 0);
+            var dateEndCurrentMonth = new DateTime(now.Year, now.Month + 1, 1, 0, 0, 0);
 
-            var result = await _context.ToDoThings.Where(t => t.UserId == userId && t.Date > dateStartCurrentMonth && t.Date < dateEndCurrentMonth).Select(t => t.Date.Day).Distinct().ToListAsync();
-
-            return result;
+            return await _context.ToDoThings.Where(t => t.UserId == userId && t.Date >= dateStartCurrentMonth && t.Date < dateEndCurrentMonth).Select(t => t.Date.Day).Distinct().ToListAsync();
         }
 
-        public async Task<bool> IsCurrentUserToDoThing(int id, string userId)
+        public async Task<bool> IsCurrentUserToDoThingAsync(int id, string? userId)
         {
             if(userId == null)
             {
@@ -128,6 +128,11 @@ namespace ReminderWebApp.Services.ToDoThingService
             }
 
             var toDoThingUserId = await _context.ToDoThings.Where(t => t.Id == id).Select(t => t.UserId).FirstOrDefaultAsync();
+
+            if(toDoThingUserId == null)
+            {
+                throw new Exception("Такого события не существует");
+            }
 
             return userId == toDoThingUserId;
         }
