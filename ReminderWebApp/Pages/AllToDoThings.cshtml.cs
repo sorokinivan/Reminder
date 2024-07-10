@@ -31,7 +31,7 @@ namespace ReminderWebApp.Pages
                 return Forbid();
             }
 
-            ToDoThings = await _toDoThingService.GetUserTodayToDoThingsByDateAsync(userId, date);
+            ToDoThings = await _toDoThingService.GetUserToDoThingsByDateAsync(userId, date);
 
             return Page();
         }

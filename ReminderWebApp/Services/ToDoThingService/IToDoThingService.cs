@@ -7,10 +7,10 @@ namespace ReminderWebApp.Services.ToDoThingService
         Task<List<ToDoThing>> GetUserTodayToDoThings(string userId);
         Task DeleteToDoThingByIdAsync(string userId, int id);
         Task<ToDoThing?> GetToDoThingByIdAsync(int id);
-        Task<List<ToDoThing>> GetUserTodayToDoThingsByDateAsync(string userId, DateTime? date);
+        Task<List<ToDoThing>> GetUserToDoThingsByDateAsync(string userId, DateTime? date);
         Task ChangeToDoThingAsync(string userId, int id, string title, string description, DateTime date, double remindTime);
         Task AddNewToDoThingAsync(string userId, string title, string description, DateTime date, DateTime time, double remindTime);
         Task<List<int>> GetUserToDoThingsDaysForCurrentMonthAsync(string? userId);
-        Task<bool> IsCurrentUserToDoThing(int id, string userId);
+        Task<bool> IsCurrentUserToDoThingAsync(int id, string? userId);
     }
 }
