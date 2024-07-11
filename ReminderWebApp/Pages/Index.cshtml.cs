@@ -43,7 +43,7 @@ namespace ReminderWebApp.Pages
             _toDoThingService = toDoThingService;
         }
 
-        public async Task<IActionResult> OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
             var userId = await _userService.GetCurrentUserIdAsync();
 
@@ -52,7 +52,7 @@ namespace ReminderWebApp.Pages
             return Page();
         }
 
-        public async Task<IActionResult> OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             try
             {
@@ -70,7 +70,7 @@ namespace ReminderWebApp.Pages
 
                 await _toDoThingService.AddNewToDoThingAsync(userId, Input.Title, Input.Description, Input.Date, Input.Time, Input.RemindTime.TotalMinutes);
 
-                if (!DaysWithToDoThings.Contains(Input.Date.Day))
+                if (DaysWithToDoThings != null && !DaysWithToDoThings.Contains(Input.Date.Day))
                 {
                     DaysWithToDoThings.Add(Input.Date.Day);
                 }

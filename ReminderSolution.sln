@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailSenderLibrary", "Email
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReminderWebApp.UnitTests", "ReminderWebApp.UnitTests\ReminderWebApp.UnitTests.csproj", "{ECD4FCDC-FF0A-4D01-A20B-88C5E8F61AD2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReminderWebApp.IntegrationTests", "ReminderWebApp.IntegrationTests\ReminderWebApp.IntegrationTests.csproj", "{4F59446D-EC20-4D7D-9BF2-F5C43CDE949E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{ECD4FCDC-FF0A-4D01-A20B-88C5E8F61AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECD4FCDC-FF0A-4D01-A20B-88C5E8F61AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECD4FCDC-FF0A-4D01-A20B-88C5E8F61AD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F59446D-EC20-4D7D-9BF2-F5C43CDE949E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F59446D-EC20-4D7D-9BF2-F5C43CDE949E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F59446D-EC20-4D7D-9BF2-F5C43CDE949E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F59446D-EC20-4D7D-9BF2-F5C43CDE949E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

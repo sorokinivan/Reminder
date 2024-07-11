@@ -314,13 +314,13 @@ namespace ReminderWebApp.UnitTests
             using (var context = new ApplicationDbContext(options))
             {
                 var service = new ToDoThingService(context);
-
+                var t = context.ToDoThings.ToList();
                 var todayToDoThings = await service.GetUserToDoThingsDaysForCurrentMonthAsync("TestUserId1");
                 Assert.NotNull(todayToDoThings);
                 Assert.NotEmpty(todayToDoThings);
                 Assert.Equal(2, todayToDoThings.Count);
-                Assert.Equal(11, todayToDoThings[0]);
-                Assert.Equal(10, todayToDoThings[1]);
+                Assert.Contains(DateTime.Now.Date.Day, todayToDoThings);
+                Assert.Contains(DateTime.Now.Date.Day + 1, todayToDoThings);
             }
         }
 
