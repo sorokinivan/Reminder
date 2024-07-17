@@ -14,7 +14,10 @@
 <ul class="all-todothings-ul">
     @foreach (var todothing in Model.ToDoThings.OrderBy(t => t.Date))
     {
-
-        <li class="all-todothings-li"><a class="all-todothings-href" asp-page="/ToDoThing" asp-route-Id="@todothing.Id">@(todothing.Date.ToString() + " / " + todothing.Title)</a></li>
+        <div class="all-todothings-div">
+            <a class="all-todothings-href" asp-page="/ToDoThing" asp-route-Id="@todothing.Id">
+        <li class="all-todothings-li">@(todothing.Date.ToString() + " / " + todothing.Title)</li>
+        </a>
+        </div>
     }
 </ul>

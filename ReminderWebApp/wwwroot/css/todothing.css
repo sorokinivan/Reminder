@@ -73,6 +73,10 @@
         background-color: lightgray;
     }
 
+.all-todothings-div :hover {
+    background-color: lightgray;
+}
+
 .all-todothings-href:link {
     text-decoration: none;
     color: black;

@@ -1,3 +1,0 @@
-2024-07-10 21:26:12.324 +03:00 [INF] Application started. Press Ctrl+C to shut down.
-2024-07-10 21:26:12.364 +03:00 [INF] Hosting environment: Development
-2024-07-10 21:26:12.364 +03:00 [INF] Content root path: C:\Users\sorok\source\repos\ReminderSolution\ReminderWebApp

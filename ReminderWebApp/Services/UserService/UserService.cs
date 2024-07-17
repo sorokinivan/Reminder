@@ -3,6 +3,7 @@ using System.Security.Claims;
 
 namespace ReminderWebApp.Services.UserService
 {
+    [Obsolete]
     public class UserService : IUserService
     {
         private IHttpContextAccessor _httpContextAccessor;
