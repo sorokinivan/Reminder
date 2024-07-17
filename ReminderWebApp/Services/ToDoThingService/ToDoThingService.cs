@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ReminderWebApp.Data;
 using ReminderWebApp.Data.Migrations;
 using ReminderWebApp.Data.Models;
+using SendGrid.Helpers.Errors.Model;
 using Serilog;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -23,39 +24,43 @@ namespace ReminderWebApp.Services.ToDoThingService
             var today = DateTime.Today;
             var tomorrow = DateTime.Today.AddDays(1);
 
-            return await _context.ToDoThings.Where(t => t.UserId == userId && t.Date < tomorrow && t.Date >= today && !t.IsDeleted).ToListAsync();
+            return await _context.ToDoThings.Where(t => t.UserId == userId && t.Date < tomorrow && t.Date >= today && !t.IsDeleted).AsNoTracking().ToListAsync();
         }
 
-        public async Task DeleteToDoThingByIdAsync(string userId, int id)
+        public async Task DeleteToDoThingByIdAsync(int id)
         {
             var result = await _context.ToDoThings.FirstOrDefaultAsync(t => t.Id == id);
 
             if (result == null)
             {
                 Log.Logger.Error("{0} Не найдено событие с Id {1}", System.Reflection.MethodBase.GetCurrentMethod()?.Name ?? "Неизвестный метод", id);
-                throw new Exception("Такого события не существует");
+                throw new NotFoundException("Такого события не существует");
             }
 
             result.IsDeleted = true;
 
             await _context.SaveChangesAsync();
 
-            Log.Logger.Information("Удалено событие с Id {0} пользователем {1}", result.Id, userId);
+            Log.Logger.Information("Удалено событие с Id {0}", result.Id);
         }
-        public async Task<ToDoThing?> GetToDoThingByIdAsync(int id)
+        public async Task<ToDoThing> GetToDoThingByIdAsync(int id)
         {
-            var result = await _context.ToDoThings.FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
+            var result = await _context.ToDoThings.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id && !t.IsDeleted);
 
             if (result == null)
             {
                 Log.Logger.Error("{0} Не найдено событие с Id {1}", System.Reflection.MethodBase.GetCurrentMethod()?.Name ?? "Неизвестный метод", id);
-                throw new Exception("Такого события не существует");
+                throw new NotFoundException("Такого события не существует");
             }
 
             return result;
         }
-        public async Task<List<ToDoThing>> GetUserToDoThingsByDateAsync(string userId, DateTime? date)
+        public async Task<List<ToDoThing>> GetUserToDoThingsByDateAsync(string? userId, DateTime? date)
         {
+            if(userId == null)
+            {
+                throw new NotFoundException("Пользователь не найден");
+            }
             var query = _context.ToDoThings.Where(t => t.UserId == userId && !t.IsDeleted);
 
             if (date != null)
@@ -66,17 +71,17 @@ namespace ReminderWebApp.Services.ToDoThingService
                 query = query.Where(t => t.UserId == userId && t.Date < toDt && t.Date >= date.Value.Date);
             }
 
-            return await query.ToListAsync();
+            return await query.AsNoTracking().ToListAsync();
         }
 
-        public async Task ChangeToDoThingAsync(string userId, int id, string title, string description, DateTime date, double remindTime)
+        public async Task ChangeToDoThingAsync(int id, string title, string description, DateTime date, double remindTime)
         {
             var toDoThing = await GetToDoThingByIdAsync(id);
 
             if(toDoThing == null)
             {
                 Log.Logger.Error("{0} Не найдено событие с Id {1}",System.Reflection.MethodBase.GetCurrentMethod()?.Name ?? "Неизвестный метод", id);
-                throw new Exception("Такого события не существует");
+                throw new NotFoundException("Такого события не существует");
             }
 
             toDoThing.Title = title;
@@ -86,7 +91,7 @@ namespace ReminderWebApp.Services.ToDoThingService
 
             await _context.SaveChangesAsync();
 
-            Log.Logger.Information("Изменено событие с Id {0} пользователем {1}", toDoThing.Id, userId);
+            Log.Logger.Information("Изменено событие с Id {0}", toDoThing.Id);
         }
 
         public async Task AddNewToDoThingAsync(string userId, string title, string description, DateTime date, DateTime time, double remindTime)
@@ -117,7 +122,7 @@ namespace ReminderWebApp.Services.ToDoThingService
             var dateStartCurrentMonth = new DateTime(now.Year, now.Month, 1, 0, 0, 0);
             var dateEndCurrentMonth = new DateTime(now.Year, now.Month + 1, 1, 0, 0, 0);
 
-            return await _context.ToDoThings.Where(t => t.UserId == userId && t.Date >= dateStartCurrentMonth && t.Date < dateEndCurrentMonth).Select(t => t.Date.Day).Distinct().ToListAsync();
+            return await _context.ToDoThings.Where(t => t.UserId == userId && t.Date >= dateStartCurrentMonth && t.Date < dateEndCurrentMonth).AsNoTracking().Select(t => t.Date.Day).Distinct().ToListAsync();
         }
 
         public async Task<bool> IsCurrentUserToDoThingAsync(int id, string? userId)
@@ -127,11 +132,11 @@ namespace ReminderWebApp.Services.ToDoThingService
                 return false;
             }
 
-            var toDoThingUserId = await _context.ToDoThings.Where(t => t.Id == id).Select(t => t.UserId).FirstOrDefaultAsync();
+            var toDoThingUserId = await _context.ToDoThings.Where(t => t.Id == id).AsNoTracking().Select(t => t.UserId).FirstOrDefaultAsync();
 
             if(toDoThingUserId == null)
             {
-                throw new Exception("Такого события не существует");
+                throw new NotFoundException("Такого события не существует");
             }
 
             return userId == toDoThingUserId;

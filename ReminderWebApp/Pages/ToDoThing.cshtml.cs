@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ReminderWebApp.Services.ToDoThingService;
 using ReminderWebApp.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
+using SendGrid.Helpers.Errors.Model;
 
 namespace ReminderWebApp.Pages
 {
@@ -13,35 +14,36 @@ namespace ReminderWebApp.Pages
     public class ToDoThingModel : PageModel
     {
         private IToDoThingService _toDoThingService;
-        private IUserService _userService;
+        private readonly IAuthorizationService _authorizationService;
 
         [BindProperty]
         public ToDoThing ToDoThing { get; set; }
-        public ToDoThingModel(IToDoThingService toDoThingService, IUserService userService)
+        public ToDoThingModel(IToDoThingService toDoThingService, IAuthorizationService authorizationService)
         {
-            _toDoThingService = toDoThingService;
-            _userService = userService;
+            _toDoThingService = toDoThingService ?? throw new ArgumentNullException(nameof(toDoThingService));
+
+            _authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
         }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
             try
             {
-                var userId = await _userService.GetCurrentUserIdAsync();
+                ToDoThing = await _toDoThingService.GetToDoThingByIdAsync(id);
 
-                var isToDoThingUser = await _toDoThingService.IsCurrentUserToDoThingAsync(id, userId);
-
-                if (userId == null || !isToDoThingUser)
+                var authResult = await _authorizationService.AuthorizeAsync(User, ToDoThing, "IsToDoThingOwner");
+                if (authResult.Succeeded)
+                {
+                    return Page();
+                }
+                else
                 {
                     return Forbid();
                 }
-
-                ToDoThing = await _toDoThingService.GetToDoThingByIdAsync(id);
-                return Page();
             }
-            catch
+            catch (NotFoundException ex)
             {
-                return Redirect("/Index");
+                return NotFound(ex.Message);
             }
         }
 
@@ -49,22 +51,13 @@ namespace ReminderWebApp.Pages
         {
             try
             {
-                var userId = await _userService.GetCurrentUserIdAsync();
-
-                var isToDoThingUser = await _toDoThingService.IsCurrentUserToDoThingAsync(id, userId);
-
-                if (userId == null || !isToDoThingUser)
-                {
-                    return Forbid();
-                }
-
-                await _toDoThingService.DeleteToDoThingByIdAsync(userId, id);
+                await _toDoThingService.DeleteToDoThingByIdAsync(id);
 
                 return Redirect("/AllToDoThings");
             }
-            catch (Exception ex)
+            catch(NotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
         }
     }

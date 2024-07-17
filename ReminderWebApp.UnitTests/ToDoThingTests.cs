@@ -91,7 +91,7 @@ namespace ReminderWebApp.UnitTests
             using (var context = new ApplicationDbContext(options))
             {
                 var service = new ToDoThingService(context);
-                await service.DeleteToDoThingByIdAsync("TestUserId1", 1);
+                await service.DeleteToDoThingByIdAsync(1);
                 Assert.Equal(5, context.ToDoThings.Where(t => !t.IsDeleted).Count());
             }
         }
@@ -110,7 +110,7 @@ namespace ReminderWebApp.UnitTests
             {
                 var service = new ToDoThingService(context);
                 //await Assert.ThrowsAsync<Exception>(async () => await service.DeleteToDoThingByIdAsync("TestUserId1", 3));
-                var ex = await Record.ExceptionAsync(async () => await service.DeleteToDoThingByIdAsync("TestUserId1", 7));
+                var ex = await Record.ExceptionAsync(async () => await service.DeleteToDoThingByIdAsync(7));
 
                 Assert.NotNull(ex);
                 Assert.IsType<Exception>(ex);
@@ -241,7 +241,7 @@ namespace ReminderWebApp.UnitTests
             {
                 var service = new ToDoThingService(context);
                 //await Assert.ThrowsAsync<Exception>(async () => await service.GetToDoThingByIdAsync(4));
-                await service.ChangeToDoThingAsync("TestUserId1", 1, "ChangedTestToDoThingTitle1", "ChangedTestToDoThingDescription1", now, 60);
+                await service.ChangeToDoThingAsync(1, "ChangedTestToDoThingTitle1", "ChangedTestToDoThingDescription1", now, 60);
                 var toDoThing = context.ToDoThings.FirstOrDefault();
                 Assert.Equal("TestUserId1", toDoThing.UserId);
                 Assert.Equal(1, toDoThing.Id);
@@ -267,7 +267,7 @@ namespace ReminderWebApp.UnitTests
                 var service = new ToDoThingService(context);
                 //await Assert.ThrowsAsync<Exception>(async () => await service.GetToDoThingByIdAsync(4));
                 
-                var ex = await Record.ExceptionAsync(async () => await service.ChangeToDoThingAsync("TestUserId1", 7, "ChangedTestToDoThingTitle1", "ChangedTestToDoThingDescription1", now, 60));
+                var ex = await Record.ExceptionAsync(async () => await service.ChangeToDoThingAsync(7, "ChangedTestToDoThingTitle1", "ChangedTestToDoThingDescription1", now, 60));
 
                 Assert.NotNull(ex);
                 Assert.IsType<Exception>(ex);

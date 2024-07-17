@@ -8,32 +8,35 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using ReminderWebApp.Services.ToDoThingService;
 using ReminderWebApp.Services.UserService;
+using Microsoft.AspNetCore.Authorization;
+using ReminderWebApp.Helpers.AuthorizationHelpers;
+using Microsoft.AspNetCore.Http;
+using SendGrid.Helpers.Errors.Model;
 
 namespace ReminderWebApp.Pages
 {
+    [Authorize]
     public class AllToDoThingsModel : PageModel
     {
-        private IUserService _userService;
         private IToDoThingService _toDoThingService;
-        public AllToDoThingsModel(IUserService userService, IToDoThingService toDoThingService)
+        public AllToDoThingsModel(IToDoThingService toDoThingService)
         {
-            _userService = userService;
-            _toDoThingService = toDoThingService;
+            _toDoThingService = toDoThingService ?? throw new ArgumentNullException(nameof(toDoThingService));
         }
         [BindProperty]
         public List<ToDoThing> ToDoThings { get; set; }
         public async Task<IActionResult> OnGet(DateTime? date)
         {
-            var userId = await _userService.GetCurrentUserIdAsync();
-
-            if(userId == null)
+            try
             {
-                return Forbid();
+                ToDoThings = await _toDoThingService.GetUserToDoThingsByDateAsync(User.GetCurrentUserId(), date);
+
+                return Page();
             }
-
-            ToDoThings = await _toDoThingService.GetUserToDoThingsByDateAsync(userId, date);
-
-            return Page();
+            catch(NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
     }
 }

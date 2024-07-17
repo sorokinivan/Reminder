@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +22,9 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace ReminderWebApp.IntegrationTests
 {
@@ -28,8 +34,8 @@ namespace ReminderWebApp.IntegrationTests
         private readonly ApplicationDbContext _context;
         private readonly IServiceScope _scope;
         private readonly HttpClient _client;
-        private readonly UserService _userService;
         private readonly ToDoThingService _toDoThingService;
+        private readonly PageContext _pageContext;
         public ToDoThingTests(CustomApplicationFactory applicationFactory)
         {
             //_applicationFactory = applicationFactory;
@@ -39,8 +45,8 @@ namespace ReminderWebApp.IntegrationTests
             _context = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             _context.Database.EnsureCreated();
             InitData();
-            _userService = GetUserService();
             _toDoThingService = new ToDoThingService(_context);
+            _pageContext = GetPageContext();
         }
 
         private void InitData()
@@ -60,6 +66,28 @@ namespace ReminderWebApp.IntegrationTests
                 _context.AddRange(testData);
                 _context.SaveChanges();
             }
+        }
+
+        private PageContext GetPageContext()
+        {
+            var user = new ClaimsPrincipal(
+                        new ClaimsIdentity(
+                            new Claim[] { new Claim(ClaimTypes.Name, "test@email.com"), new Claim(ClaimTypes.NameIdentifier, "TestUserId1") },
+                            "Basic")
+                        );
+            var httpContext = new DefaultHttpContext()
+            {
+                User = user
+            };
+            var modelState = new ModelStateDictionary();
+            var actionContext = new ActionContext(httpContext, new RouteData(), new PageActionDescriptor(), modelState);
+            var modelMetadataProvider = new EmptyModelMetadataProvider();
+            var viewData = new ViewDataDictionary(modelMetadataProvider, modelState);
+            var pageContext = new PageContext(actionContext)
+            {
+                ViewData = viewData
+            };
+            return pageContext;
         }
 
         private UserService GetUserService()
@@ -95,9 +123,8 @@ namespace ReminderWebApp.IntegrationTests
         public async Task AddNewToDoThing_Post_Success()
         {
             var now = DateTime.Now;
-            var logger = new Mock<Microsoft.Extensions.Logging.ILogger<IndexModel>>();
 
-            var pageModel = new IndexModel(logger.Object, _userService, _toDoThingService);
+            var pageModel = new IndexModel(_toDoThingService) { PageContext = _pageContext };
             pageModel.Input = new NewToDoThingModel { Title = "TestToDoThingTitle7", Description = "TestToDoThingDescription7", Date = now.Date.AddDays(1), RemindTime = now.TimeOfDay};
             await pageModel.OnPostAsync();
             var toDoThings = _context.ToDoThings.ToList();
@@ -113,9 +140,8 @@ namespace ReminderWebApp.IntegrationTests
         public async Task AddNewToDoThing_Post_ModelIsInvalid_NotSuccess()
         {
             var now = DateTime.Now;
-            var logger = new Mock<Microsoft.Extensions.Logging.ILogger<IndexModel>>();
 
-            var pageModel = new IndexModel(logger.Object, _userService, _toDoThingService);
+            var pageModel = new IndexModel(_toDoThingService);
             pageModel.Input = new NewToDoThingModel { Title = "TestToDoThingTitle8", Description = "TestToDoThingDescription8", Date = now.Date.AddDays(1), RemindTime = now.TimeOfDay };
             pageModel.ModelState.AddModelError("Title", "Необходимо ввести название события");
             await pageModel.OnPostAsync();
@@ -127,9 +153,8 @@ namespace ReminderWebApp.IntegrationTests
         public async Task GetDaysWithToDothings_Get_Success()
         {
             var now = DateTime.Now;
-            var logger = new Mock<Microsoft.Extensions.Logging.ILogger<IndexModel>>();
 
-            var pageModel = new IndexModel(logger.Object, _userService, _toDoThingService);
+            var pageModel = new IndexModel(_toDoThingService) { PageContext = _pageContext };
 
             await pageModel.OnGetAsync();
 
@@ -142,7 +167,7 @@ namespace ReminderWebApp.IntegrationTests
         {
             var now = DateTime.Now;
 
-            var pageModel = new EditToDoThingModel(_toDoThingService, _userService);
+            var pageModel = new EditToDoThingModel(_toDoThingService);
             pageModel.ToDoThing = new ToDoThingModelForEdit{Id = 1, Title = "TestToDoThingTitle7", Description = "TestToDoThingDescription7", Date = now.Date.AddDays(1), RemindTime = now.TimeOfDay };
             
             await pageModel.OnPostAsync(1);
@@ -160,7 +185,7 @@ namespace ReminderWebApp.IntegrationTests
             var now = DateTime.Now;
             var logger = new Mock<Microsoft.Extensions.Logging.ILogger<EditToDoThingModel>>();
 
-            var pageModel = new EditToDoThingModel(_toDoThingService, _userService);
+            var pageModel = new EditToDoThingModel(_toDoThingService);
             pageModel.ToDoThing = new ToDoThingModelForEdit { Id = 1, Title = "TestToDoThingTitle7", Description = "TestToDoThingDescription7", Date = now.Date.AddDays(1), RemindTime = now.TimeOfDay };
             pageModel.ModelState.AddModelError("Title", "Необходимо ввести название события");
             await pageModel.OnPostAsync(4);
@@ -176,7 +201,7 @@ namespace ReminderWebApp.IntegrationTests
         {
             var now = DateTime.Now;
 
-            var pageModel = new EditToDoThingModel(_toDoThingService, _userService);
+            var pageModel = new EditToDoThingModel(_toDoThingService);
 
             await pageModel.OnGetAsync(3);
 
@@ -191,7 +216,7 @@ namespace ReminderWebApp.IntegrationTests
         {
             var now = DateTime.Now;
 
-            var pageModel = new EditToDoThingModel(_toDoThingService, _userService);
+            var pageModel = new EditToDoThingModel(_toDoThingService);
 
             var ex = await Record.ExceptionAsync(async () => await pageModel.OnGetAsync(10));
 
@@ -203,7 +228,10 @@ namespace ReminderWebApp.IntegrationTests
         [Fact]
         public async Task DeleteToDoThing_Post_Success()
         {
-            var pageModel = new ToDoThingModel(_toDoThingService, _userService);
+            var authorizeService = new Mock<IAuthorizationService>();
+            authorizeService.Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<string>())).ReturnsAsync(AuthorizationResult.Success);
+
+            var pageModel = new ToDoThingModel(_toDoThingService, authorizeService.Object);
 
             await pageModel.OnPostDeleteAsync(2);
             var toDoThing = await _context.ToDoThings.FirstOrDefaultAsync(t => t.Id == 2);
@@ -214,7 +242,10 @@ namespace ReminderWebApp.IntegrationTests
         [Fact]
         public async Task DeleteToDoThing_Post_WrongUser_NotSuccess()
         {
-            var pageModel = new ToDoThingModel(_toDoThingService, _userService);
+            var authorizeService = new Mock<IAuthorizationService>();
+            authorizeService.Setup(service => service.AuthorizeAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<object>(), It.IsAny<string>())).ReturnsAsync(AuthorizationResult.Success);
+
+            var pageModel = new ToDoThingModel(_toDoThingService, authorizeService.Object);
 
             await pageModel.OnPostDeleteAsync(5);
 
@@ -226,7 +257,24 @@ namespace ReminderWebApp.IntegrationTests
         [Fact]
         public async Task GetUserAllToDoThings_Get_Success()
         {
-            var pageModel = new AllToDoThingsModel(_userService, _toDoThingService);
+            //var user = new ClaimsPrincipal(
+            //            new ClaimsIdentity(
+            //                new Claim[] { new Claim(ClaimTypes.Name, "test@email.com"), new Claim(ClaimTypes.NameIdentifier, "TestUserId1") },
+            //                "Basic")
+            //            );
+            //var httpContext = new DefaultHttpContext()
+            //{
+            //    User = user
+            //};
+            //var modelState = new ModelStateDictionary();
+            //var actionContext = new ActionContext(httpContext, new RouteData(), new PageActionDescriptor(), modelState);
+            //var modelMetadataProvider = new EmptyModelMetadataProvider();
+            //var viewData = new ViewDataDictionary(modelMetadataProvider, modelState);
+            //var pageContext = new PageContext(actionContext)
+            //{
+            //    ViewData = viewData
+            //};
+            var pageModel = new AllToDoThingsModel(_toDoThingService) { PageContext = _pageContext };
 
             await pageModel.OnGet(null);
 
@@ -239,7 +287,7 @@ namespace ReminderWebApp.IntegrationTests
         {
             var now = DateTime.Now;
 
-            var pageModel = new AllToDoThingsModel(_userService, _toDoThingService);
+            var pageModel = new AllToDoThingsModel(_toDoThingService) { PageContext = _pageContext };
 
             await pageModel.OnGet(now);
 

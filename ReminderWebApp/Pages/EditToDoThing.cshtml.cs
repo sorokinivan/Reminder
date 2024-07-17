@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +7,7 @@ using ReminderWebApp.Data;
 using ReminderWebApp.Data.Models;
 using ReminderWebApp.Services.ToDoThingService;
 using ReminderWebApp.Services.UserService;
+using SendGrid.Helpers.Errors.Model;
 using System.ComponentModel.DataAnnotations;
 
 namespace ReminderWebApp.Pages
@@ -29,73 +31,60 @@ namespace ReminderWebApp.Pages
     public class EditToDoThingModel : PageModel
     {
         private IToDoThingService _toDoThingService;
-        private IUserService _userService;
 
         [BindProperty]
         public ToDoThingModelForEdit ToDoThing { get; set; }
-        public EditToDoThingModel(IToDoThingService toDoThingService, IUserService userService)
+        public EditToDoThingModel(IToDoThingService toDoThingService)
         {
-            _toDoThingService = toDoThingService;
-            _userService = userService;
+            _toDoThingService = toDoThingService ?? throw new ArgumentNullException(nameof(toDoThingService));
         }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            var userId = await _userService.GetCurrentUserIdAsync();
-
-            var toDoThing = await _toDoThingService.GetToDoThingByIdAsync(id);
-
-            var isToDoThingUser = await _toDoThingService.IsCurrentUserToDoThingAsync(id, userId);
-
-            if (userId == null || !isToDoThingUser)
+            try
             {
-                return Forbid();
+                var toDoThing = await _toDoThingService.GetToDoThingByIdAsync(id);
+
+                if (toDoThing == null)
+                {
+                    return Redirect("/Index");
+                }
+
+                var editModel = new ToDoThingModelForEdit
+                {
+                    Id = toDoThing.Id,
+                    Title = toDoThing.Title,
+                    Description = toDoThing.Description,
+                    Date = toDoThing.Date,
+                    RemindTime = TimeSpan.FromMinutes(toDoThing.RemindTime)
+                };
+
+                ToDoThing = editModel;
+
+                return Page();
             }
-
-            if (toDoThing == null)
+            catch(NotFoundException ex)
             {
-                return Redirect("/Index");
+                return NotFound(ex.Message);
             }
-
-            var editModel = new ToDoThingModelForEdit
-            {
-                Id = toDoThing.Id,
-                Title = toDoThing.Title,
-                Description = toDoThing.Description,
-                Date = toDoThing.Date,
-                RemindTime = TimeSpan.FromMinutes(toDoThing.RemindTime)
-            };
-
-            ToDoThing = editModel;
-
-            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int id)
         {
             try
             {
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     return Page();
                 }
 
-                var userId = await _userService.GetCurrentUserIdAsync();
+                await _toDoThingService.ChangeToDoThingAsync(id, ToDoThing.Title, ToDoThing.Description, ToDoThing.Date, ToDoThing.RemindTime.TotalMinutes);
 
-                var isToDoThingUser = await _toDoThingService.IsCurrentUserToDoThingAsync(id, userId);
-
-                if (userId == null || !isToDoThingUser)
-                {
-                    return Forbid();
-                }
-
-                await _toDoThingService.ChangeToDoThingAsync(userId, id, ToDoThing.Title, ToDoThing.Description, ToDoThing.Date, ToDoThing.RemindTime.TotalMinutes);
-
-            return Redirect("/ToDoThing/" + id);
+                return Redirect("/ToDoThing/" + id);
             }
-            catch (Exception ex)
+            catch(NotFoundException ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
         }
     }

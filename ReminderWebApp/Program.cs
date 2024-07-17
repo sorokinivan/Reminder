@@ -7,6 +7,8 @@ using ReminderWebApp.Services.ToDoThingService;
 using ReminderWebApp.Services.UserService;
 using Serilog;
 using Serilog.Events;
+using ReminderWebApp.Helpers.AuthorizationHelpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ReminderWebApp
 {
@@ -24,6 +26,14 @@ namespace ReminderWebApp
                 .ReadFrom.Configuration(builder.Configuration)
                 .CreateLogger();
             builder.Services.AddSerilog();
+            builder.Services.AddScoped<IAuthorizationHandler, IsToDoThingOwnerHandler>();
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("IsToDoThingOwner", policyBuilder =>
+                {
+                    policyBuilder.AddRequirements(new IsToDoThingOwnerRequirement());
+                });
+            });
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -37,7 +47,6 @@ namespace ReminderWebApp
             builder.Services.AddRazorPages();
 
             builder.Services.AddTransient<IToDoThingService, ToDoThingService>();
-            builder.Services.AddTransient<IUserService, UserService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -59,6 +68,7 @@ namespace ReminderWebApp
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapRazorPages();

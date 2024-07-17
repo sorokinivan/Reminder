@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ReminderWebApp.Data;
 using ReminderWebApp.Services.ToDoThingService;
@@ -8,26 +9,33 @@ namespace ReminderWebApp.ViewComponents
 {
     public class ToDoThingsViewComponent : ViewComponent
     {
-        private ApplicationDbContext _context;
         private IToDoThingService _toDoThingService;
-        private IUserService _userService;
-        public ToDoThingsViewComponent(ApplicationDbContext context, IToDoThingService toDoThingService, IUserService userService)
+        private IHttpContextAccessor _httpContextAccessor;
+        private UserManager<IdentityUser> _userManager;
+        public ToDoThingsViewComponent(IToDoThingService toDoThingService, IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager)
         {
-            _context = context;
             _toDoThingService = toDoThingService;
-            _userService = userService;
+            _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
         }
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            var userId = await _userService.GetCurrentUserIdAsync();
+            var claimsPrincipal = _httpContextAccessor.HttpContext?.User;
 
-            if (userId == null)
+            if (claimsPrincipal == null)
             {
                 return View();
             }
 
-            var todayTodothings = await _toDoThingService.GetUserTodayToDoThings(userId);
+            var user = await _userManager.GetUserAsync(claimsPrincipal);
+
+            if (user == null)
+            {
+                return View();
+            }
+
+            var todayTodothings = await _toDoThingService.GetUserTodayToDoThings(user.Id);
             return View(todayTodothings);
         }
     }
